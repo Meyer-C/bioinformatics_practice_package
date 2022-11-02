@@ -62,8 +62,6 @@ def FASTA_readlines(file):
 
     return all_FASTA
 
-print()
-
 def bp_count(seq):
     ACGT = [0,0,0,0]
     for x in range(len(seq)):
@@ -193,7 +191,6 @@ def long_com_motif(FASTA_filepath):
     return long_motifs
     # fuccc me, it hard
 
-print(long_com_motif())
 
 def compliment_DNA(seq):
     new_seq = ''
@@ -248,6 +245,69 @@ def calc_protein_mass(prot_seq):
 #
 # this is essentially the same as for key value in dict
 # but instead do for whatever it is(can be named anything) in list, return element of list
+
+
+# Let's find some protein mutations
+def protein_seq_mutations(seq1, seq2):
+
+    this_seq_comparison = ''
+
+    if len(seq1) == len(seq2):
+        this_seq_comparison +=  seq_comparison(seq1, seq2)
+
+    elif len(seq1) < len(seq2):
+        seq_ham_dist = {}
+        for x in range(len(seq2) - len(seq1)):
+            new_seq2 = seq2[x: x+len(seq1)]
+            seq_ham_dist[new_seq2] = hamming_dist(seq1, new_seq2)
+        this_seq_comparison = seq_comparison(min(seq_ham_dist, key=seq_ham_dist.get), seq1)
+
+    else:
+        seq_ham_dist = {}
+        for x in range(len(seq1) - len(seq2)):
+            new_seq1 = seq1[x: x + len(seq2)]
+            seq_ham_dist[new_seq1] = hamming_dist(seq2, new_seq1)
+        this_seq_comparison = seq_comparison(min(seq_ham_dist, key=seq_ham_dist.get), seq2)
+
+    return this_seq_comparison
+
+def hamming_dist(seq1, seq2):
+    hamming_distance = 0
+    for x, symbol in enumerate(seq1):
+        if symbol != seq2[x]: hamming_distance += 1
+    return hamming_distance
+
+def seq_comparison(seq1, seq2):
+    amino_acid_properties = {'A':'H', 'I':'H', 'L':'H', 'M':'H', 'V':'H', 'F':'A', 'W':'A', 'Y':'A', 'N':'P', 'C':'P',
+                             'Q':'P', 'S':'P', 'T':'P', 'D':'+', 'E':'+', 'R':'-', 'H':'-', 'K':'-', 'G':'U', 'P':'U'}
+    comparison_1 = ''
+    comparison_2 = ''
+    for y, amino_acid in enumerate(seq1):
+        if amino_acid == seq2[y]:
+            comparison_1 += '|'
+            comparison_2 += '|'
+        else:
+            comparison_1 += amino_acid_properties.get(amino_acid)
+            comparison_2 += amino_acid_properties.get(seq2[y])
+    return str(f'{seq1}\n{comparison_1}\n{comparison_2}\n{seq2}')
+
+
+def protein_seq_properties(seq):
+    amino_acid_properties = {'A': 'H', 'I': 'H', 'L': 'H', 'M': 'H', 'V': 'H', 'F': 'A', 'W': 'A', 'Y': 'A', 'N': 'P',
+                             'C': 'P', 'Q': 'P', 'S': 'P', 'T': 'P', 'D': '+', 'E': '+', 'R': '-', 'H': '-', 'K': '-',
+                             'G': 'U', 'P': 'U'}
+    properties_seq = ''
+    for amino_acid in seq:
+        properties_seq += amino_acid_properties.get(amino_acid)
+    return str(f'{seq}\n{properties_seq}')
+
+seq1 = 'AIYMAFLVGLYC'
+seq2 = 'ADYMAKAVGSYC'
+print(protein_seq_mutations(seq1, seq2))
+print(protein_seq_properties(seq1))
+print(protein_seq_properties(seq2))
+
+
 
 
 
